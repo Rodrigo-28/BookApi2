@@ -1,12 +1,37 @@
+using bookApi.Application.Extensions;
+using bookApi.Application.Mappings;
+using bookApi.infrastructure.Contexts;
+using bookApi.infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+//Swagger extension
+builder.Services.AddCustomSwagger();
+//Infrastructure
+builder.Services.AddInfrastructureServices();
+//aplication
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
+
+//Configure Db Context
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
+));
+//automapper
+builder.Services.AddAutoMapper(typeof(UserProfile));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
