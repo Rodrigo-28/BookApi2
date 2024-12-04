@@ -30,11 +30,4 @@
     <ProjectReference Include="..\bookApi.Domian\bookApi.Domian.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Dtos\" />
-  </ItemGroup>
-
 </Project>

@@ -2,6 +2,7 @@ using bookApi.Application.Extensions;
 using bookApi.Application.Mappings;
 using bookApi.infrastructure.Contexts;
 using bookApi.infrastructure.Extensions;
+using bookApi.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

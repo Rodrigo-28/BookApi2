@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using bookApi.Application.Interfaces;
+using bookApi.Application.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace bookApi.Application.Extensions
 {
@@ -6,6 +8,8 @@ namespace bookApi.Application.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+
+            services.AddTransient<IUserService, UserService>();
             return services;
         }
 
