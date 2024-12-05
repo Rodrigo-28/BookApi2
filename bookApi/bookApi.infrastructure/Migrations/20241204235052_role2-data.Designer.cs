@@ -12,8 +12,8 @@ using bookApi.infrastructure.Contexts;
 namespace bookApi.infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241126161540_User-Role")]
-    partial class UserRole
+    [Migration("20241204235052_role2-data")]
+    partial class role2data
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,18 @@ namespace bookApi.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "user"
+                        });
                 });
 
             modelBuilder.Entity("bookApi.Domian.Models.User", b =>

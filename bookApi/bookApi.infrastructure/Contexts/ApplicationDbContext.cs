@@ -13,7 +13,19 @@ namespace bookApi.infrastructure.Contexts
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            SeedData(modelBuilder);
+
             base.OnModelCreating(modelBuilder);
+        }
+
+        private void SeedData(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Role>().HasData(
+              new Role { Id = 1, Name = "admin" },
+              new Role { Id = 2, Name = "user" }
+
+         );
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using bookApi.Domian.Interfaces;
 using bookApi.Domian.Models;
-using bookApi.infrastructure.Migrations;
+using bookApi.infrastructure.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
