@@ -33,9 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
     <Folder Include="Attributes\" />
-    <Folder Include="Validators\" />
     <Folder Include="Helpers\" />
   </ItemGroup>
 

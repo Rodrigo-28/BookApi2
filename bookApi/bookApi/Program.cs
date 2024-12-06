@@ -1,5 +1,6 @@
 using bookApi.Application.Extensions;
 using bookApi.Application.Mappings;
+using bookApi.Extensions;
 using bookApi.infrastructure.Contexts;
 using bookApi.infrastructure.Extensions;
 using bookApi.Middleware;
@@ -15,6 +16,8 @@ builder.Services.AddInfrastructureServices();
 //aplication
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplicationServices();
+//Validator
+builder.Services.AddCustomValidators();
 builder.Services.AddControllers();
 
 //Configure Db Context

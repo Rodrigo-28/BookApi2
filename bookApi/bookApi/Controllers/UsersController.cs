@@ -1,5 +1,7 @@
 ﻿using bookApi.Application.Dtos.Request;
+using bookApi.Application.Exceptions;
 using bookApi.Application.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace bookApi.Controllers
@@ -22,8 +24,17 @@ namespace bookApi.Controllers
             return Ok(user);
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
+        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto, IValidator<CreateUserDto> validator)
         {
+            var validationResult = await validator.ValidateAsync(createUserDto);
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequestException(validationResult.ToString())
+                {
+                    ErrorCode = "004"
+                };
+            }
+
             var user = await _userService.Create(createUserDto);
             return Ok(user);
         }
