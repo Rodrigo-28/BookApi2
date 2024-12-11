@@ -12,8 +12,8 @@ using bookApi.infrastructure.Contexts;
 namespace bookApi.infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241209235519_Genre-data")]
-    partial class Genredata
+    [Migration("20241211233026_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,6 +88,8 @@ namespace bookApi.infrastructure.Migrations
 
                     b.HasIndex("GenreId");
 
+                    b.HasIndex("BookId", "GenreId");
+
                     b.ToTable("book_genre");
                 });
 
@@ -108,63 +110,6 @@ namespace bookApi.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("genres");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "fantasy"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Science Fiction"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Mystery"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Horror"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Fiction"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Romance"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Short Story"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Biography"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "self-help"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "History"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Technology"
-                        });
                 });
 
             modelBuilder.Entity("bookApi.Domian.Models.Role", b =>
@@ -184,18 +129,6 @@ namespace bookApi.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "user"
-                        });
                 });
 
             modelBuilder.Entity("bookApi.Domian.Models.User", b =>

@@ -7,7 +7,7 @@
 namespace bookApi.infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Genredata : Migration
+    public partial class genredata : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

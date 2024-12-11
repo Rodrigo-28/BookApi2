@@ -12,8 +12,8 @@ using bookApi.infrastructure.Contexts;
 namespace bookApi.infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241211230847_nada")]
-    partial class nada
+    [Migration("20241211233627_genre-data")]
+    partial class genredata
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

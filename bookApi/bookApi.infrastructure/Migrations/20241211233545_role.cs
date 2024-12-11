@@ -7,7 +7,7 @@
 namespace bookApi.infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class role2data : Migration
+    public partial class role : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
