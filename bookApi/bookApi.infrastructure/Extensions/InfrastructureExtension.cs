@@ -10,6 +10,7 @@ namespace bookApi.infrastructure.Extensions
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserReposirtory>();
+            services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IPasswordEncryptionService, PasswordEncryptionService>();
             services.AddTransient<IJwtTokenService, JwtTokenService>();
 

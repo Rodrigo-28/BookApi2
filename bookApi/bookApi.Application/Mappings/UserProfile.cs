@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using bookApi.Application.Dtos.Request;
 using bookApi.Application.Dtos.Responses;
+using bookApi.Domian.Common;
 using bookApi.Domian.Models;
 
 namespace bookApi.Application.Mappings
@@ -12,6 +13,31 @@ namespace bookApi.Application.Mappings
             CreateMap<User, UserResponseDto>();
             CreateMap<CreateUserDto, User>();
             CreateMap<UpdateUserDto, User>();
+            //books
+            CreateMap<CreateBookDto, Book>();
+
+            CreateMap<Book, BookResponseDto>();
+            CreateMap<BookResponse, BookListResponseDto>();
+            CreateMap<GenericListResponse<BookResponse>, GenericListResponse<BookListResponseDto>>();
+            CreateMap<GenericListResponse<Book>, GenericListResponse<BookResponseDto>>();
+            //CreateMap<Book, BookResponseDto>()
+            //      .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.BookGenres.Select(bg => bg.Genre).ToList()));
+            CreateMap<Book, BookResponseDto>()
+    .ForMember(dest => dest.Genres,
+        opt => opt.MapFrom(src => src.BookGenres.Select(bg => new GenreResponseDto
+        {
+            Id = bg.Genre.Id,
+            Name = bg.Genre.Name
+        }).ToList()));
+
+            //genres
+            CreateMap<BookGenre, GenreResponseDto>()
+                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Genre.Id))
+                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Genre.Name));
+            CreateMap<Genre, GenreResponseDto>();
+
+
+
         }
     }
 }
