@@ -10,6 +10,9 @@ namespace bookApi.Application.Mappings
     {
         public UserProfile()
         {
+            //Genre
+            CreateMap<Genre, GenreResponseDto>();
+
             // userbook
             CreateMap<User, UserResponseDto>();
             //

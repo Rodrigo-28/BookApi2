@@ -12,6 +12,7 @@ namespace bookApi.Application.Extensions
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IBookService, BookService>();
+            services.AddTransient<IGenreService, GenreService>();
 
             return services;
         }
