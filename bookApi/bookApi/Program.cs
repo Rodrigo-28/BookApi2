@@ -5,24 +5,30 @@ using bookApi.infrastructure.Contexts;
 using bookApi.infrastructure.Extensions;
 using bookApi.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 //Swagger extension
-builder.Services.AddCustomSwagger();
-//Infrastructure
 builder.Services.AddInfrastructureServices();
-//aplication
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddCustomSwagger();
 builder.Services.AddApplicationServices();
-//Validator
 builder.Services.AddCustomValidators();
+builder.Services.AddControllers();
+//Infrastructure
+//aplication
+//builder.Services.AddHttpContextAccessor();
+//Validator
 
 //Configure Db Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
-));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
+);
+
+//Add Authorization and Authentication
+builder.Services.AddCustomAuth(builder.Configuration);
 //automapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
@@ -39,6 +45,8 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+
 
 app.UseAuthorization();
 

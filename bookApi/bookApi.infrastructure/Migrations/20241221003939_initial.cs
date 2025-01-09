@@ -46,6 +46,19 @@ namespace bookApi.infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "reading_statuses",
+                columns: table => new
+                {
+                    reding_status_id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_reading_statuses", x => x.reding_status_id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "roles",
                 columns: table => new
                 {
@@ -106,6 +119,40 @@ namespace bookApi.infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "user_book",
+                columns: table => new
+                {
+                    user_id = table.Column<int>(type: "integer", nullable: false),
+                    book_id = table.Column<int>(type: "integer", nullable: false),
+                    reading_status = table.Column<int>(type: "integer", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    rating = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_book", x => new { x.user_id, x.book_id });
+                    table.ForeignKey(
+                        name: "FK_user_book_books_book_id",
+                        column: x => x.book_id,
+                        principalTable: "books",
+                        principalColumn: "book_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_book_reading_statuses_reading_status",
+                        column: x => x.reading_status,
+                        principalTable: "reading_statuses",
+                        principalColumn: "reding_status_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_book_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_book_genre_book_id_genre_id",
                 table: "book_genre",
@@ -115,6 +162,21 @@ namespace bookApi.infrastructure.Migrations
                 name: "IX_book_genre_genre_id",
                 table: "book_genre",
                 column: "genre_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_book_book_id",
+                table: "user_book",
+                column: "book_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_book_reading_status",
+                table: "user_book",
+                column: "reading_status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_book_user_id_book_id",
+                table: "user_book",
+                columns: new[] { "user_id", "book_id" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_role_id",
@@ -129,13 +191,19 @@ namespace bookApi.infrastructure.Migrations
                 name: "book_genre");
 
             migrationBuilder.DropTable(
-                name: "users");
+                name: "user_book");
+
+            migrationBuilder.DropTable(
+                name: "genres");
 
             migrationBuilder.DropTable(
                 name: "books");
 
             migrationBuilder.DropTable(
-                name: "genres");
+                name: "reading_statuses");
+
+            migrationBuilder.DropTable(
+                name: "users");
 
             migrationBuilder.DropTable(
                 name: "roles");

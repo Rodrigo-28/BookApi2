@@ -27,5 +27,8 @@ namespace bookApi.Domian.Models
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        //navigation property
+        public ICollection<UserBook> UserBooks { get; set; }
     }
 }

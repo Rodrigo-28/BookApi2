@@ -12,18 +12,8 @@ namespace bookApi.infrastructure.Extensions
         {
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminPolicy", policy =>
-                {
-                    policy.RequireRole("Admin");
-                });
-                options.AddPolicy("ManagerPolicy", policy =>
-                {
-                    policy.RequireRole("Manager");
-                });
-                options.AddPolicy("EditorPolicy", policy =>
-                {
-                    policy.RequireRole("Editor");
-                });
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
             })
            .AddAuthentication(x =>
            {

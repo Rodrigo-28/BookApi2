@@ -37,7 +37,9 @@ namespace bookApi.Domian.Models
         [Column("deleted")]
         public bool Deleted { get; set; } = false;
         //navigation properties
-        public ICollection<BookGenre> BookGenres { get; set; } = new List<BookGenre>(); // Many-to-Many 
+        public ICollection<BookGenre> BookGenres { get; set; } = new List<BookGenre>();
+        public ICollection<UserBook> UserBooks { get; set; } = new List<UserBook>(); // Many-to-Many 
+        // Many-to-Many 
 
     }
 }

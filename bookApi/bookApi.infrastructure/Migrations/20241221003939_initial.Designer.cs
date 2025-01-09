@@ -12,8 +12,8 @@ using bookApi.infrastructure.Contexts;
 namespace bookApi.infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241211233627_genre-data")]
-    partial class genredata
+    [Migration("20241221003939_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,63 +110,25 @@ namespace bookApi.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("genres");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "fantasy"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Science Fiction"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Mystery"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Horror"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Fiction"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Romance"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Short Story"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Biography"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "self-help"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "History"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Technology"
-                        });
+            modelBuilder.Entity("bookApi.Domian.Models.ReadingStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("reding_status_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("reading_statuses");
                 });
 
             modelBuilder.Entity("bookApi.Domian.Models.Role", b =>
@@ -186,18 +148,6 @@ namespace bookApi.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "user"
-                        });
                 });
 
             modelBuilder.Entity("bookApi.Domian.Models.User", b =>
@@ -243,6 +193,43 @@ namespace bookApi.infrastructure.Migrations
                     b.ToTable("users");
                 });
 
+            modelBuilder.Entity("bookApi.Domian.Models.UserBook", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("integer")
+                        .HasColumnName("book_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<float>("Rating")
+                        .HasColumnType("real")
+                        .HasColumnName("rating");
+
+                    b.Property<int>("ReadingStatusId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reading_status");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("UserId", "BookId");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("ReadingStatusId");
+
+                    b.HasIndex("UserId", "BookId");
+
+                    b.ToTable("user_book");
+                });
+
             modelBuilder.Entity("bookApi.Domian.Models.BookGenre", b =>
                 {
                     b.HasOne("bookApi.Domian.Models.Book", "Book")
@@ -273,9 +260,38 @@ namespace bookApi.infrastructure.Migrations
                     b.Navigation("role");
                 });
 
+            modelBuilder.Entity("bookApi.Domian.Models.UserBook", b =>
+                {
+                    b.HasOne("bookApi.Domian.Models.Book", "Book")
+                        .WithMany("UserBooks")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("bookApi.Domian.Models.ReadingStatus", "ReadingStatus")
+                        .WithMany("UserBooks")
+                        .HasForeignKey("ReadingStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("bookApi.Domian.Models.User", "User")
+                        .WithMany("UserBooks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("ReadingStatus");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("bookApi.Domian.Models.Book", b =>
                 {
                     b.Navigation("BookGenres");
+
+                    b.Navigation("UserBooks");
                 });
 
             modelBuilder.Entity("bookApi.Domian.Models.Genre", b =>
@@ -283,9 +299,19 @@ namespace bookApi.infrastructure.Migrations
                     b.Navigation("BookGenres");
                 });
 
+            modelBuilder.Entity("bookApi.Domian.Models.ReadingStatus", b =>
+                {
+                    b.Navigation("UserBooks");
+                });
+
             modelBuilder.Entity("bookApi.Domian.Models.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("bookApi.Domian.Models.User", b =>
+                {
+                    b.Navigation("UserBooks");
                 });
 #pragma warning restore 612, 618
         }

@@ -34,9 +34,12 @@ namespace bookApi.infrastructure.Repositories
             var book = await _context.Books.
                 Include(b => b.BookGenres)
                 .ThenInclude(bg => bg.Genre)
+                .Include(b => b.UserBooks)
+                .ThenInclude(ub => ub.ReadingStatus)
                 .Select(b => new BookResponse
                 {
-                    Book = b
+                    Book = b,
+                    UserBook = b.UserBooks.FirstOrDefault(ub => ub.UserId == userId)
                 })
                 .FirstOrDefaultAsync(b => b.Book.Id == bookId && !b.Book.Deleted);
             return book;
@@ -49,14 +52,19 @@ namespace bookApi.infrastructure.Repositories
             return book;
         }
         public async Task<GenericListResponse<BookResponse>> GetList(int? userId, int page, int pageSize, string? queryStr = null)
+
+
         {
             // params
             IQueryable<BookResponse> query = _context.Books
                 .Include(b => b.BookGenres)
                 .ThenInclude(bg => bg.Genre)
+                .Include(b => b.UserBooks)
+                .ThenInclude(ub => ub.ReadingStatus)
                 .Select(b => new BookResponse
                 {
-                    Book = b
+                    Book = b,
+                    UserBook = b.UserBooks.FirstOrDefault(b => b.UserId == userId)
                 })
                 .Where(b => !b.Book.Deleted);
 
@@ -172,6 +180,88 @@ namespace bookApi.infrastructure.Repositories
                 Data = data
             };
         }
+
+        public async Task<GenericListResponse<BookResponse>> GetUserShelf(int userId, int page, int pageSize)
+        {
+            var query = _context.Books
+                .Include(b => b.BookGenres)
+                .ThenInclude(bg => bg.Genre)
+                .Include(b => b.UserBooks)
+                .ThenInclude(ub => ub.ReadingStatus)
+                .Where(b => b.UserBooks.Any(ub => ub.UserId == userId))
+                .Select(b => new BookResponse
+                {
+                    Book = b,
+                    UserBook = b.UserBooks.FirstOrDefault(b => b.UserId == userId)
+                })
+                .Where(b => !b.Book.Deleted);
+            // pagination
+            int total = await query.CountAsync();
+
+            //
+            int currentPage = page < 1 ? PaginationConstants.DefaultPageSize : pageSize;
+            int currentLength = pageSize < 1 ? PaginationConstants.DefaultPageSize : pageSize;
+            //
+
+            int skip = (currentPage - 1) * currentLength;
+
+            query = query.Skip(skip).Take(currentPage);
+            var data = await query.ToListAsync();
+
+            return new GenericListResponse<BookResponse>
+            {
+                Total = total,
+                Page = page,
+                Length = pageSize,
+                Data = data
+            };
+
+        }
+
+        public async Task<BookResponse?> Shelve(UserBook userBook)
+        {
+            _context.UserBooks.Add(userBook);
+            await _context.SaveChangesAsync();
+
+            return await GetOne(userBook.UserId, userBook.BookId);
+        }
+
+        public async Task<UserBook> UpdateUserBook(UserBook userbook)
+        {
+            //_context.UserBooks.Update(userbook).Property(ub => ub.UpdatedAt).IsModified = true;
+            //await _context.SaveChangesAsync();
+
+            //return await GetOneUserBook(userbook.UserId, userbook.BookId);
+            try
+            {
+                _context.UserBooks.Update(userbook).Property(ub => ub.UpdatedAt).IsModified = true;
+                await _context.SaveChangesAsync();
+
+                return await GetOneUserBook(userbook.UserId, userbook.BookId);
+            }
+            catch (DbUpdateException ex)
+            {
+
+                var innerException = ex.InnerException?.Message;
+                Console.WriteLine($"Inner Exception in Create method: {innerException}");
+                throw;
+            }
+        }
+
+        public async Task<UserBook> GetOneUserBook(int userId, int bookId)
+        {
+            return await _context.UserBooks
+                .Include(ub => ub.ReadingStatus)
+                .FirstAsync(ub => ub.UserId == userId && ub.BookId == bookId);
+        }
+
+        public async Task<bool> RemoveFromShelf(UserBook userBook)
+        {
+            _context.UserBooks.Remove(userBook);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
 
     }
 }

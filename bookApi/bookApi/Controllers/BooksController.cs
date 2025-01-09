@@ -1,5 +1,7 @@
 ﻿using bookApi.Application.Dtos.Request;
 using bookApi.Application.Interfaces;
+using bookApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace bookApi.Controllers
@@ -15,6 +17,8 @@ namespace bookApi.Controllers
         {
             this._bookService = bookService;
         }
+        [Authorize(Policy = "AdminOnly")]
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBookDto bookDto)
         {
@@ -24,6 +28,7 @@ namespace bookApi.Controllers
         [HttpGet("show/{bookId}", Name = "GetBook")]
         public async Task<IActionResult> GetOne(int bookId)
         {
+            var userId = UserHelper.GetOptionalUserId(User);
             var res = await _bookService.GetOne(null, bookId);
             return Ok(res);
         }
@@ -33,11 +38,72 @@ namespace bookApi.Controllers
             var books = await _bookService.GetList(null, page, pageSize, query);
             return Ok(books);
         }
+
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{bookId}")]
         public async Task<IActionResult> Update(int bookId, [FromBody] UpdateBookDto bookDto)
         {
             var user = await _bookService.Update(bookId, bookDto);
             return Ok(user);
+        }
+
+        [Authorize(Policy = "AuthenticatedUser")]
+        [HttpGet("review/list")]
+        public async Task<IActionResult> GetUserShelf([FromQuery] int page, [FromQuery] int pageSize)
+        {
+            var userId = UserHelper.GetRequiredUserId(User);
+            var books = await _bookService.GetUserShelf(userId, page, pageSize);
+
+            return Ok(books);
+        }
+
+        [HttpPost("shelve")]
+        public async Task<IActionResult> ShelveBook([FromBody] ShelveBookDto shelveBookDto)
+        {
+            var userId = UserHelper.GetRequiredUserId(User);
+
+            var shelveBookResponse = await _bookService.ShelveBook(userId, shelveBookDto.BookId);
+
+            if (shelveBookResponse != null)
+            {
+                return CreatedAtAction(
+                    actionName: nameof(GetOne),
+                    routeValues: new { bookId = shelveBookResponse.Book.Id },
+                    value: shelveBookResponse
+                );
+
+            }
+
+            return Conflict();
+
+        }
+        [Authorize(Policy = "AuthenticatedUser")]
+
+        [HttpPut("{bookId}/update-status")]
+        public async Task<IActionResult> UpdateStatus(int bookId, [FromBody] UpdateReadingStatusDto updateReadingStatusDto)
+        {
+            var userId = UserHelper.GetRequiredUserId(User);
+            var userBook = await _bookService.updateReadingStatus(userId, bookId, updateReadingStatusDto);
+
+            return Ok(userBook);
+        }
+        [Authorize(Policy = "AuthenticatedUser")]
+
+        [HttpPut("{bookId}/rate")]
+        public async Task<IActionResult> RateBook(int bookId, [FromBody] RateBookDto rateBookDto)
+        {
+            var userId = UserHelper.GetRequiredUserId(User);
+            var userBook = await _bookService.RateBook(userId, bookId, rateBookDto);
+            return Ok(userBook);
+        }
+        [Authorize(Policy = "AuthenticatedUser")]
+
+        [HttpDelete("{bookId}/remove")]
+        public async Task<IActionResult> RemoveFromShelf(int bookId)
+        {
+            var userId = UserHelper.GetRequiredUserId(User);
+            var userBookDeleted = await _bookService.RemoveFromShelf(userId, bookId);
+            return Ok(userBookDeleted);
         }
 
     }

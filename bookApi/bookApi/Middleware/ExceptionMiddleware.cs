@@ -46,6 +46,17 @@ namespace bookApi.Middleware
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     break;
             }
+            // Recorrer Inner Exceptions
+            string GetFullErrorMessage(Exception ex)
+            {
+                var messages = new List<string>();
+                while (ex != null)
+                {
+                    messages.Add(ex.Message);
+                    ex = ex.InnerException;
+                }
+                return string.Join(" | ", messages);
+            }
 
             ErrorResponse errorResponse;
 
