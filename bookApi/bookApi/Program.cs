@@ -18,7 +18,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplicationServices();
 //Validator
 builder.Services.AddCustomValidators();
-builder.Services.AddControllers();
 
 //Configure Db Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
