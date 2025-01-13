@@ -12,6 +12,8 @@ namespace bookApi.infrastructure.Extensions
             services.AddTransient<IUserRepository, UserReposirtory>();
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IGenreRepository, GenreRepository>();
+            services.AddTransient<ILikeRepository, LikeRepository>();
+            services.AddTransient<IReviewRepository, ReviewRepository>();
             services.AddTransient<IPasswordEncryptionService, PasswordEncryptionService>();
             services.AddTransient<IJwtTokenService, JwtTokenService>();
 

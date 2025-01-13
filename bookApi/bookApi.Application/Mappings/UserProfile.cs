@@ -27,6 +27,9 @@ namespace bookApi.Application.Mappings
             CreateMap<ReadingStatus, ReadingStatusResponseDto>();
             // CreateMap<ShelveBookDto, UserBook>();
 
+            //like
+            CreateMap<Like, LikeResponseDto>();
+
             CreateMap<GenericListResponse<BookResponse>, GenericListResponse<BookListResponseDto>>();
             CreateMap<GenericListResponse<Book>, GenericListResponse<BookResponseDto>>();
             //CreateMap<Book, BookResponseDto>()
@@ -51,6 +54,12 @@ namespace bookApi.Application.Mappings
                    Id = src.ReadingStatus.Id,
                    Name = src.ReadingStatus.Name,
                }));
+
+            //review
+            CreateMap<Review, CreateReviewResponseDto>();
+            CreateMap<Review, ReviewResponseDto>()
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
+
 
             CreateMap<GenericListResponse<UserBook>, GenericListResponse<UserBookResponseDto>>()
             .ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Data));

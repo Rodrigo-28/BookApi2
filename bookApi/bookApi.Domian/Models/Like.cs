@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace bookApi.Domian.Models
 {
-    internal class Like
+    [Table("likes")]
+
+    public class Like
     {
+        [Column("user_id")]
+        public int UserId { get; set; }
+        public User User { get; set; }
+
+        [Column("review_id")]
+        public int ReviewId { get; set; }
+        public Review Review { get; set; }
     }
 }
