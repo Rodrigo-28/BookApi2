@@ -35,5 +35,7 @@ namespace bookApi.Domian.Models
         public int LikesCount => Likes?.Count ?? 0; // Calculate likes count dynamically
                                                     // public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<Like> Likes { get; set; } = new List<Like>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
     }
 }

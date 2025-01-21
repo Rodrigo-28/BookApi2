@@ -17,6 +17,8 @@ namespace bookApi.infrastructure.Contexts
         public DbSet<UserBook> UserBooks { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+
 
         public DbSet<ReadingStatus> ReadingStatuses { get; set; }
 
@@ -87,6 +89,13 @@ namespace bookApi.infrastructure.Contexts
             modelBuilder.Entity<Review>()
                .HasIndex(r => new { r.UserId, r.BookId })
                .IsUnique();
+
+            //comment
+            modelBuilder.Entity<Comment>()
+           .HasOne(c => c.Review)
+           .WithMany(r => r.Comments)
+           .HasForeignKey(c => c.ReviewId)
+           .OnDelete(DeleteBehavior.Cascade);
 
             SeedData(modelBuilder);
 

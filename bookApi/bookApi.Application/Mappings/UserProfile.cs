@@ -29,9 +29,13 @@ namespace bookApi.Application.Mappings
 
             //like
             CreateMap<Like, LikeResponseDto>();
+            //comment
+            //CreateMap<Comment, CommentDto>()
 
             CreateMap<GenericListResponse<BookResponse>, GenericListResponse<BookListResponseDto>>();
             CreateMap<GenericListResponse<Book>, GenericListResponse<BookResponseDto>>();
+            CreateMap<GenericListResponse<Comment>, GenericListResponse<CommentResponseDto>>();
+
             //CreateMap<Book, BookResponseDto>()
             //      .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.BookGenres.Select(bg => bg.Genre).ToList()));
             CreateMap<Book, BookResponseDto>()
@@ -63,6 +67,9 @@ namespace bookApi.Application.Mappings
 
             CreateMap<GenericListResponse<UserBook>, GenericListResponse<UserBookResponseDto>>()
             .ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Data));
+            //comment
+            CreateMap<Comment, CommentResponseDto>()
+                   .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
 
         }
     }
