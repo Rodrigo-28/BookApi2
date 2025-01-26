@@ -9,6 +9,8 @@ namespace bookApi.Extensions
         {
             services.AddValidatorsFromAssemblyContaining<LoginValidator>();
             services.AddValidatorsFromAssemblyContaining<CreateUserValidator>();
+            services.AddValidatorsFromAssemblyContaining<SignInValidator>();
+            services.AddValidatorsFromAssemblyContaining<UpdatePasswordValidator>();
 
 
             return services;

@@ -9,7 +9,7 @@ namespace bookApi.infrastructure.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
-            services.AddTransient<IUserRepository, UserReposirtory>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IGenreRepository, GenreRepository>();
             services.AddTransient<ILikeRepository, LikeRepository>();

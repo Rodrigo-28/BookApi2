@@ -5,14 +5,10 @@ using System.Linq.Expressions;
 
 namespace bookApi.Application.Interfaces
 {
-    public interface IUserService
+    public interface IUserService : IBaseService<User, UserResponseDto, UserResponseDto, CreateUserDto, UpdateUserDto>
     {
-        Task<IEnumerable<UserResponseDto>> GetAll();
-        Task<UserResponseDto> GetOne(int userId);
-        Task<UserResponseDto> Create(CreateUserDto createUserDto);
-
-        Task<UserResponseDto> Update(int userId, UpdateUserDto updateUserDto);
-        Task<GenericResponseDto> Delete(int userId);
-        Task<User> GetOne(Expression<Func<User, bool>> predicate);
+        public Task<User?> GetOne(Expression<Func<User, bool>> predicate);
+        public Task<UserResponseDto> SignIn(SignInDto signInDto);
+        public Task<bool> UpdatePassword(int userId, UpdatePasswordDto updatePasswordDto);
     }
 }

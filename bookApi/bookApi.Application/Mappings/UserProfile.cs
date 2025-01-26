@@ -70,6 +70,10 @@ namespace bookApi.Application.Mappings
             //comment
             CreateMap<Comment, CommentResponseDto>()
                    .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
+            //signIn
+            CreateMap<SignInDto, CreateUserDto>()
+        .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password1))
+        .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => 2));
 
         }
     }

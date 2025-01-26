@@ -9,96 +9,114 @@ using System.Linq.Expressions;
 
 namespace bookApi.Application.Services
 {
-    public class UserService : IUserService
+    public class UserService : BaseService<User, UserResponseDto, UserResponseDto, CreateUserDto, UpdateUserDto>, IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
+        private new readonly IUserRepository _repository;
+
         private readonly IPasswordEncryptionService _passwordEncryptionService;
 
-        public UserService(IUserRepository userRepository, IMapper mapper, IPasswordEncryptionService passwordEncryptionService)
+        public UserService(IUserRepository _userRepository, IPasswordEncryptionService passwordEncryptionService, IMapper mapper) : base(_userRepository, mapper)
         {
-            this._userRepository = userRepository;
-            this._mapper = mapper;
+            _repository = _userRepository;
+
             this._passwordEncryptionService = passwordEncryptionService;
         }
-        public async Task<UserResponseDto> Create(CreateUserDto createUserDto)
+        public async Task<User?> GetOne(Expression<Func<User, bool>> predicate)
         {
-            var userExist = await _userRepository.GetOne(u => u.Email == createUserDto.Email);
-            if (userExist != null)
+            return await _repository.GetOne(predicate);
+        }
+
+        public override async Task<UserResponseDto> Create(CreateUserDto body)
+        {
+            var emailExists = await _repository.GetOne(u => u.Email == body.Email);
+            if (emailExists != null)
             {
-                throw new BadRequestException($"Already exist an user with this email {createUserDto.Email}")
+                throw new BadRequestException($"Email is already taken: {body.Email}")
                 {
                     ErrorCode = "006"
                 };
             }
-            var newUser = _mapper.Map<User>(createUserDto);
-            newUser.Password = _passwordEncryptionService.HashPassword(createUserDto.Password);
+            var userNameExist = await _repository.GetOne(u => u.Username == body.Username);
 
-            var user = await _userRepository.Create(newUser);
-            return _mapper.Map<UserResponseDto>(user);
+            if (userNameExist != null)
+            {
+                throw new BadRequestException($"Username is already taken: {body.Email}")
+                {
+                    ErrorCode = "006"
+                };
+            }
+            body.Password = _passwordEncryptionService.HashPassword(body.Password);
+
+            return await base.Create(body);
+        }
+        public override async Task<UserResponseDto> Update(int userId, UpdateUserDto body)
+        {
+            body.Password = _passwordEncryptionService.HashPassword(body.Password);
+            return await base.Update(userId, body);
         }
 
-        public async Task<GenericResponseDto> Delete(int userId)
+        public async Task<UserResponseDto> SignIn(SignInDto signInDto)
         {
-            var user = await _userRepository.GetOne(userId);
+            var emailExists = await _repository.GetOne(u => u.Email == signInDto.Email);
+            if (emailExists != null)
+            {
+                throw new BadRequestException($"Email is already taken: {signInDto.Email}")
+                {
+                    ErrorCode = "006"
+                };
+            };
+
+            var userNameExists = await _repository.GetOne(u => u.Username == signInDto.Username);
+
+            if (userNameExists != null)
+            {
+                throw new BadRequestException($"Username is already taken: {signInDto.Username}")
+                {
+                    ErrorCode = "006"
+                };
+            }
+
+            if (signInDto.Password1 != signInDto.Password2)
+            {
+                throw new BadRequestException($"Passwords do not match")
+                {
+                    ErrorCode = "006"
+                };
+            };
+
+            CreateUserDto newUser = new()
+            {
+                Username = signInDto.Username,
+                Email = signInDto.Email,
+                Password = _passwordEncryptionService.HashPassword(signInDto.Password1),
+                RoleId = 2
+            };
+            return await base.Create(newUser);
+        }
+
+        public async Task<bool> UpdatePassword(int userId, UpdatePasswordDto updatePasswordDto)
+        {
+            var user = await _repository.GetOne(u => u.Id == userId);
             if (user == null)
             {
-                throw new NotFoundException($"user of id {userId} does not exist ")
+                throw new NotFoundException($"User of id {userId} does not exist")
                 {
                     ErrorCode = "005"
                 };
-            }
-            await _userRepository.Delete(user);
-            return new GenericResponseDto { Success = true };
-        }
-
-        public async Task<IEnumerable<UserResponseDto>> GetAll()
-        {
-            var users = await _userRepository.GetAll();
-            return _mapper.Map<IEnumerable<UserResponseDto>>(users);
-        }
-
-        public async Task<UserResponseDto> GetOne(int userId)
-        {
-            var user = await _userRepository.GetOne(userId);
-            if (user == null)
+            };
+            if (!_passwordEncryptionService.VerifyPassword(user.Password, updatePasswordDto.CurrentPassword))
             {
-                throw new NotFoundException($"user of id {userId} does not exist ")
+
+                throw new BadRequestException($"Current password does not match")
                 {
                     ErrorCode = "005"
                 };
-            }
-            return _mapper.Map<UserResponseDto>(user);
-        }
+            };
+            user.Password = _passwordEncryptionService.HashPassword(updatePasswordDto.CurrentPassword);
+            user.UpdatedAt = DateTime.UtcNow;
+            var updatedUser = await _repository.Update(user);
 
-        public async Task<User> GetOne(Expression<Func<User, bool>> predicate)
-        {
-            var user = await _userRepository.GetOne(predicate);
-            if (user == null)
-            {
-                throw new NotFoundException()
-                {
-                    ErrorCode = "004"
-                };
-            }
-            return user;
-        }
-
-        public async Task<UserResponseDto> Update(int userId, UpdateUserDto updateUserDto)
-        {
-            var user = await _userRepository.GetOne(userId);
-            if (user == null)
-            {
-                throw new NotFoundException($"user of id {userId} does not exist ")
-                {
-                    ErrorCode = "005"
-                };
-            }
-            updateUserDto.Password = _passwordEncryptionService.HashPassword(updateUserDto.Password);
-            var updateUser = _mapper.Map(updateUserDto, user);
-            await _userRepository.Update(updateUser);
-            return _mapper.Map<UserResponseDto>(updateUser);
-
+            return updatedUser != null;
 
         }
     }

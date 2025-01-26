@@ -4,7 +4,7 @@ namespace bookApi.Domian.Models
 {
     [Table("users")]
 
-    public class User
+    public class User : SoftDeletableModel
     {
         [Column("user_id")]
         public int Id { get; set; }
@@ -22,13 +22,11 @@ namespace bookApi.Domian.Models
         public int RoleId { get; set; }
         public Role role { get; set; }
 
-        [Column("deleted")]
-        public bool Deleted { get; set; } = false;
 
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+
 
         //navigation property
-        public ICollection<UserBook> UserBooks { get; set; }
+        public ICollection<UserBook> UserBooks { get; set; } = new List<UserBook>();
     }
 }
