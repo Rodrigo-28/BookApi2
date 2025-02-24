@@ -5,74 +5,32 @@ using bookApi.Application.Exceptions;
 using bookApi.Application.Interfaces;
 using bookApi.Domian.Interfaces;
 using bookApi.Domian.Models;
-using System.Linq.Expressions;
 
 namespace bookApi.Application.Services
 {
-    public class GenreService : IGenreService
+    public class GenreService : BaseService<Genre, GenreResponseDto, GenreResponseDto, CreateGenreDto, CreateGenreDto>, IGenreService
     {
-        private readonly IGenreRepository _genreRepository;
-        private readonly IMapper _mapper;
+        private new readonly IGenreRepository _repository;
 
-        public GenreService(IGenreRepository genreRepository, IMapper mapper)
+        public GenreService(IGenreRepository repository, IMapper mapper) : base(repository, mapper)
         {
-            this._genreRepository = genreRepository;
-            this._mapper = mapper;
+            _repository = repository;
+
         }
-        public async Task<GenreResponseDto> Create(CreateGenreDto genreDto)
+
+        public override async Task<GenreResponseDto> Create(CreateGenreDto body)
         {
-            var genreExists = await _genreRepository.GetOne(g => g.Name == genreDto.Name);
+            var genreExists = await _repository.GetOne(g => g.Name == body.Name);
 
             if (genreExists != null)
             {
-                throw new BadRequestException($"Genre with name '{genreDto.Name}' already exists")
+                throw new BadRequestException($"Genre with name '{body.Name}' already exists")
                 {
                     ErrorCode = "006"
                 };
             }
-            var newGenre = new Genre
-            {
-                Name = genreDto.Name
-            };
-
-            var genre = await _genreRepository.Create(newGenre);
-
-            return _mapper.Map<GenreResponseDto>(genre);
+            return await base.Create(body);
         }
 
-        public async Task<IEnumerable<GenreResponseDto>> GetAll()
-        {
-            var genres = await _genreRepository.GetAll();
-            return _mapper.Map<IEnumerable<GenreResponseDto>>(genres);
-        }
-
-        public async Task<GenreResponseDto?> GetOne(int genreId)
-        {
-            var genre = await _genreRepository.GetOne(genreId);
-
-            if (genre == null)
-            {
-                throw new NotFoundException($"No genre found with id of {genreId}")
-                {
-                    ErrorCode = "004"
-                };
-            }
-            return _mapper.Map<GenreResponseDto>(genre);
-        }
-
-        public async Task<Genre> GetOne(Expression<Func<Genre, bool>> predicate)
-        {
-            var genre = await _genreRepository.GetOne(predicate);
-
-            if (genre == null)
-            {
-                throw new NotFoundException()
-                {
-                    ErrorCode = "004"
-                };
-            }
-
-            return genre;
-        }
     }
 }
