@@ -5,7 +5,7 @@ namespace bookApi.Domian.Models
 {
     [Table("books")]
 
-    public class Book
+    public class Book : SoftDeletableModel
     {
         [Column("book_id")]
         public int Id { get; set; }
@@ -31,11 +31,11 @@ namespace bookApi.Domian.Models
         [Column("pages")]
         public int? PageCount { get; set; }
 
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        //[Column("created_at")]
+        //public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Column("deleted")]
-        public bool Deleted { get; set; } = false;
+        //[Column("deleted")]
+        //public bool Deleted { get; set; } = false;
         //navigation properties
         public ICollection<BookGenre> BookGenres { get; set; } = new List<BookGenre>();
         public ICollection<UserBook> UserBooks { get; set; } = new List<UserBook>(); // Many-to-Many 
