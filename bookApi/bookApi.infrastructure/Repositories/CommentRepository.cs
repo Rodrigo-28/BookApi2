@@ -7,33 +7,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace bookApi.infrastructure.Repositories
 {
-    public class CommentRepository : ICommentRepository
+    public class CommentRepository : BaseRepository<Comment>, ICommentRepository
     {
-        private readonly ApplicationDbContext _context;
 
-        public CommentRepository(ApplicationDbContext context)
+
+        public CommentRepository(ApplicationDbContext context) : base(context)
         {
-            this._context = context;
-        }
-
-
-        public async Task<Comment?> Create(Comment comment)
-        {
-
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
-
-            return await _context.Comments
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.Id == comment.Id);
 
         }
 
-        public async Task<bool> Delete(Comment comment)
+        public async Task<Comment> CreateComment(Comment comment)
         {
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-            return true;
+            await base.Create(comment);
+
+            // recupero el comentario recien creado
+            var createdComment = await base.GetOne(comment.Id, query => query.Include(c => c.User));
+
+            return createdComment;
         }
 
         public async Task<GenericListResponse<Comment>> GetList(int reviewId, int page, int pageSize)
@@ -42,15 +32,16 @@ namespace bookApi.infrastructure.Repositories
                 .Include(c => c.User)
                 .Where(c => c.ReviewId == reviewId);
 
+            //pag
             int total = await query.CountAsync();
-            //
+
             int currentPage = page < 1 ? PaginationConstants.DefaultPage : page;
             int currentLength = pageSize < 1 ? PaginationConstants.DefaultPageSize : pageSize;
-            //
+
             int skip = (currentPage - 1) * currentLength;
+
             query = query.Skip(skip).Take(currentLength);
             var data = await query.ToListAsync();
-
 
             return new GenericListResponse<Comment>
             {
@@ -61,12 +52,11 @@ namespace bookApi.infrastructure.Repositories
             };
         }
 
-        public Task<Comment?> GetOne(int reviewId, int commentId)
+        public async Task<Comment?> GetOne(int reviewId, int commentId)
         {
-            var comment = _context.Comments.
-                Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.ReviewId == reviewId && c.Id == commentId);
-            return comment;
+            return await base.GetOne(commentId, query =>
+            query.Include(c => c.User)
+            .Where(c => c.ReviewId == reviewId));
         }
     }
 }
