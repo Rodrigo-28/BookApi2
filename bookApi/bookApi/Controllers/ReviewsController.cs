@@ -21,7 +21,7 @@ namespace bookApi.Controllers
         public async Task<IActionResult> Create([FromBody] CreateReviewDto reviewDto)
         {
             var userId = UserHelper.GetRequiredUserId(User);
-            var reviewResponse = await _reviewService.Create(reviewDto, userId);
+            var reviewResponse = await _reviewService.Create(reviewDto);
             if (reviewResponse != null)
             {
                 return CreatedAtAction(

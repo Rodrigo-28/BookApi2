@@ -6,51 +6,40 @@ using System.Linq.Expressions;
 
 namespace bookApi.infrastructure.Repositories
 {
-    public class ReviewRepository : IReviewRepository
+    public class ReviewRepository : BaseRepository<Review>, IReviewRepository
     {
-        private readonly ApplicationDbContext _context;
 
-        public ReviewRepository(ApplicationDbContext context)
-        {
-            this._context = context;
-        }
-        public async Task<Review> Create(Review review)
-        {
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-            return review;
 
-        }
-
-        public async Task<bool> Delete(Review review)
+        public ReviewRepository(ApplicationDbContext context) : base(context)
         {
-            _context.Reviews.Remove(review);
-            await _context.SaveChangesAsync();
-            return true;
+
         }
 
         public async Task<IEnumerable<Review>> GetBookReviews(int bookId)
         {
-            var bookReviews = await _context.Reviews
-                .Include(r => r.User)
-                .Include(r => r.Likes)
-                .Where(r => r.BookId == bookId).ToListAsync();
+            var bookReviews = await base.GetAll(query =>
+            query.Include(r => r.User)
+            .Include(r => r.Comments)
+            .Include(r => r.Likes)
+            .Where(r => r.BookId == bookId));
+
             return bookReviews;
         }
 
         public async Task<Review?> GetOne(int reviewId)
         {
-            var review = await _context.Reviews
-                .Include(r => r.User)
-                .Include(r => r.Likes)
-                .FirstOrDefaultAsync(r => r.Id == reviewId);
-            return review;
+            return await base.GetOne(reviewId, query =>
+            query.Include(r => r.User)
+            .Include(r => r.Comments)
+            .Include(r => r.Likes
+
+
+            ));
         }
 
         public async Task<Review?> GetOne(Expression<Func<Review, bool>> predicate)
         {
             return await _context.Reviews.FirstOrDefaultAsync(predicate);
-
         }
     }
 }

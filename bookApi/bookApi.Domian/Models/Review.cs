@@ -4,7 +4,7 @@ namespace bookApi.Domian.Models
 {
     [Table("reviews")]
 
-    public class Review
+    public class Review : BaseModel
     {
         [Column("review_id")]
         public int Id { get; set; }
