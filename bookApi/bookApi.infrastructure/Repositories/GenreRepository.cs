@@ -24,7 +24,7 @@ namespace bookApi.infrastructure.Repositories
 
         public async Task<IEnumerable<Genre>> GetAll()
         {
-            return _context.Genres.ToList();
+            return await _context.Genres.ToListAsync();
         }
 
         public async Task<Genre?> GetOne(int genreId)
