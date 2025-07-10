@@ -58,11 +58,7 @@ namespace bookApi.Controllers
             ////Returns 201
             if (user != null)
             {
-                //return CreatedAtAction(
-                //    actionName: nameof(GetOne), // The action that retrieves the created resource
-                //    routeValues: new { userId = user.Id }, // Route values to populate the URL for the location header
-                //    value: user
-                //);
+
                 return Ok(user);
             }
             ////Returns 409

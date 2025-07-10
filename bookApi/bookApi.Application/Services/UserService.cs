@@ -112,7 +112,7 @@ namespace bookApi.Application.Services
                     ErrorCode = "005"
                 };
             };
-            user.Password = _passwordEncryptionService.HashPassword(updatePasswordDto.CurrentPassword);
+            user.Password = _passwordEncryptionService.HashPassword(updatePasswordDto.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;
             var updatedUser = await _repository.Update(user);
 
