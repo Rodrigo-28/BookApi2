@@ -99,6 +99,24 @@ namespace bookApi.infrastructure.Contexts
             modelBuilder
          .Entity<Book>()
          .Ignore(b => b.UpdatedAt);
+            // Configure relationships y PK compuesta para Like
+            modelBuilder.Entity<Like>(entity =>
+            {
+                entity.HasOne(l => l.User)
+                      .WithMany()
+                      .HasForeignKey(l => l.UserId);
+
+                entity.HasOne(l => l.Review)
+                      .WithMany(r => r.Likes)
+                      .HasForeignKey(l => l.ReviewId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // PK compuesta
+                entity.HasKey(l => new { l.UserId, l.ReviewId });
+
+                // ¡Ignoramos la propiedad Id heredada de BaseModel!
+                entity.Ignore(l => l.Id);
+            });
 
             SeedData(modelBuilder);
 
