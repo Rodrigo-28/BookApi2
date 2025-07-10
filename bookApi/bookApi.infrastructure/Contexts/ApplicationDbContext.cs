@@ -96,6 +96,9 @@ namespace bookApi.infrastructure.Contexts
            .WithMany(r => r.Comments)
            .HasForeignKey(c => c.ReviewId)
            .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder
+         .Entity<Book>()
+         .Ignore(b => b.UpdatedAt);
 
             SeedData(modelBuilder);
 

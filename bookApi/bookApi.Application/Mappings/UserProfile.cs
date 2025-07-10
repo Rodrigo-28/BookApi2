@@ -10,70 +10,90 @@ namespace bookApi.Application.Mappings
     {
         public UserProfile()
         {
-            //Genre
+            // ─── Genre & ReadingStatus ──────────────────────────────────────
+            CreateMap<CreateGenreDto, Genre>();
             CreateMap<Genre, GenreResponseDto>();
 
-            // userbook
-            CreateMap<User, UserResponseDto>();
-            //
+            CreateMap<ReadingStatus, ReadingStatusResponseDto>();
 
+            // ─── User & Authentication ────────────────────────────────────
             CreateMap<CreateUserDto, User>();
             CreateMap<UpdateUserDto, User>();
-            //books
+            CreateMap<User, UserResponseDto>();
+
+            CreateMap<SignInDto, CreateUserDto>()
+                .ForMember(d => d.Password, o => o.MapFrom(s => s.Password1))
+                .ForMember(d => d.RoleId, o => o.MapFrom(_ => 2));
+
+            CreateMap<LoginRequestDto, LoginResponseDto>();
+
+            // ─── Book & UserBook ─────────────────────────────────────────
             CreateMap<CreateBookDto, Book>();
-
+            CreateMap<UpdateBookDto, Book>();
             CreateMap<Book, BookResponseDto>();
-            CreateMap<BookResponse, BookListResponseDto>();
-            CreateMap<ReadingStatus, ReadingStatusResponseDto>();
-            // CreateMap<ShelveBookDto, UserBook>();
 
-            //like
-            CreateMap<Like, LikeResponseDto>();
-            //comment
-            //CreateMap<Comment, CommentDto>()
-
-            CreateMap<GenericListResponse<BookResponse>, GenericListResponse<BookListResponseDto>>();
-            CreateMap<GenericListResponse<Book>, GenericListResponse<BookResponseDto>>();
-            CreateMap<GenericListResponse<Comment>, GenericListResponse<CommentResponseDto>>();
-
-            //CreateMap<Book, BookResponseDto>()
-            //      .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.BookGenres.Select(bg => bg.Genre).ToList()));
-            CreateMap<Book, BookResponseDto>()
-            .ForMember(dest => dest.Genres,
-                opt => opt.MapFrom(src => src.BookGenres.Select(bg => new GenreResponseDto
-                {
-                    Id = bg.Genre.Id,
-                    Name = bg.Genre.Name
-                }).ToList()));
-
-            //genres
-            CreateMap<BookGenre, GenreResponseDto>()
-                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Genre.Id))
-                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Genre.Name));
-            CreateMap<Genre, GenreResponseDto>();
-            //bookuser
             CreateMap<UserBook, UserBookResponseDto>()
-               .ForMember(dest => dest.Status, opt => opt.MapFrom(src => new ReadingStatusResponseDto
-               {
-                   Id = src.ReadingStatus.Id,
-                   Name = src.ReadingStatus.Name,
-               }));
+                .ForMember(d => d.Status, o => o.MapFrom(src => new ReadingStatusResponseDto
+                {
+                    Id = src.ReadingStatus.Id,
+                    Name = src.ReadingStatus.Name
+                }));
 
-            //review
+            // ─── Proyecciones de BookResponse ─────────────────────────────
+
+            // Mapea BookResponse → BookResponseDto
+            CreateMap<BookResponse, BookResponseDto>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Book.Id))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Book.Title))
+                .ForMember(d => d.Author, o => o.MapFrom(s => s.Book.Author))
+                .ForMember(d => d.PublishYear, o => o.MapFrom(s => s.Book.PublishYear ?? 0))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.Book.Description))
+                .ForMember(d => d.CoverUrl, o => o.MapFrom(s => s.Book.CoverUrl))
+                .ForMember(d => d.PageCount, o => o.MapFrom(s => s.Book.PageCount ?? 0))
+                .ForMember(d => d.Genres, o => o.MapFrom(s =>
+                    s.Book.BookGenres.Select(bg => new GenreResponseDto
+                    {
+                        Id = bg.Genre.Id,
+                        Name = bg.Genre.Name
+                    })));
+
+            // Envuelve el anterior en BookListResponseDto
+            CreateMap<BookResponse, BookListResponseDto>()
+                .ForMember(d => d.Book, o => o.MapFrom(s => s));
+
+            // Detalle completo, incluye UserBook
+            CreateMap<BookResponse, BookDetailedResponseDto>()
+                .ForMember(d => d.Book, o => o.MapFrom(s => s))
+                .ForMember(d => d.UserBook, o => o.MapFrom(s => s.UserBook));
+
+            // ─── Paginación genérica ───────────────────────────────────────
+            CreateMap<GenericListResponse<BookResponse>, GenericListResponse<BookListResponseDto>>()
+                .ForMember(d => d.Data, o => o.MapFrom(s => s.Data));
+            CreateMap<GenericListResponse<BookResponse>, GenericListResponse<BookDetailedResponseDto>>()
+                .ForMember(d => d.Data, o => o.MapFrom(s => s.Data));
+
+            CreateMap<GenericListResponse<Comment>, GenericListResponse<CommentResponseDto>>()
+                .ForMember(d => d.Data, o => o.MapFrom(s => s.Data));
+            CreateMap<GenericListResponse<UserBook>, GenericListResponse<UserBookResponseDto>>()
+                .ForMember(d => d.Data, o => o.MapFrom(s => s.Data));
+
+            // ─── Comments, Likes & Reviews ────────────────────────────────
+            CreateMap<CreateCommentDto, Comment>();
+            CreateMap<UpdateCommentDto, Comment>();
+
+            CreateMap<Comment, CommentResponseDto>()
+                .ForMember(d => d.Username, o => o.MapFrom(s => s.User.Username));
+
+            CreateMap<Like, LikeResponseDto>();
+
+            CreateMap<CreateReviewDto, Review>();
+            CreateMap<UpdateReviewDto, Review>();
+
             CreateMap<Review, CreateReviewResponseDto>();
             CreateMap<Review, ReviewResponseDto>()
-                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
-
-
-            CreateMap<GenericListResponse<UserBook>, GenericListResponse<UserBookResponseDto>>()
-            .ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Data));
-            //comment
-            CreateMap<Comment, CommentResponseDto>()
-                   .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
-            //signIn
-            CreateMap<SignInDto, CreateUserDto>()
-        .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password1))
-        .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => 2));
+                .ForMember(d => d.Username, o => o.MapFrom(s => s.User.Username))
+                .ForMember(d => d.CommentsCount, o => o.MapFrom(s => s.Comments.Count))
+                .ForMember(d => d.LikesCount, o => o.MapFrom(s => s.Likes.Count));
 
         }
     }
