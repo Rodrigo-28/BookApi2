@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bookApi", "bookApi\bookApi.csproj", "{2221AAB9-D8D8-483A-9AC7-AE43B4A86662}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bookApi", "bookApi\bookApi.csproj", "{2221AAB9-D8D8-483A-9AC7-AE43B4A86662}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bookApi.Application", "bookApi.Application\bookApi.Application.csproj", "{CB0505EF-4494-418F-A888-34959A594CAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bookApi.Application", "bookApi.Application\bookApi.Application.csproj", "{CB0505EF-4494-418F-A888-34959A594CAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bookApi.Domian", "bookApi.Domian\bookApi.Domian.csproj", "{9D39198B-F562-4DFF-B5A1-5DD36DAA36B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bookApi.Domian", "bookApi.Domian\bookApi.Domian.csproj", "{9D39198B-F562-4DFF-B5A1-5DD36DAA36B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bookApi.infrastructure", "bookApi.infrastructure\bookApi.infrastructure.csproj", "{1C937F8F-833B-4B23-AFD5-9343F1F04F9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bookApi.infrastructure", "bookApi.infrastructure\bookApi.infrastructure.csproj", "{1C937F8F-833B-4B23-AFD5-9343F1F04F9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bookApiTests", "bookApiTests\bookApiTests.csproj", "{1A62CAA3-B8B9-46CC-95D2-A3188BE3BF8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{1C937F8F-833B-4B23-AFD5-9343F1F04F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C937F8F-833B-4B23-AFD5-9343F1F04F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C937F8F-833B-4B23-AFD5-9343F1F04F9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A62CAA3-B8B9-46CC-95D2-A3188BE3BF8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A62CAA3-B8B9-46CC-95D2-A3188BE3BF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A62CAA3-B8B9-46CC-95D2-A3188BE3BF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A62CAA3-B8B9-46CC-95D2-A3188BE3BF8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

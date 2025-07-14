@@ -87,42 +87,52 @@ namespace bookApi.infrastructure.Repositories
                     var property = Expression.Property(Expression.Property(parameter, "Book"), filter.propertyName);
                     Expression? expression;
                     var propertyType = property.Type;
+                    // Determinar el tipo subyacente para Nullable<T>
+                    var underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+                    // Convertir el string al tipo base (int, DateTime, etc.)
+                    object convertedValue = Convert.ChangeType(filter.value, underlyingType);
+                    // Crear CONSTANTE del mismo tipo que la propiedad (nullable incluído) ← aquí
+                    var constant = Expression.Constant(convertedValue, propertyType);
 
-                    var value = (propertyType == typeof(string)) ? filter.value : Convert.ChangeType(filter.value, propertyType);
+
+
+
                     switch (filter.type)
                     {
                         case FilterTypes.Equals:
-                            expression = Expression.Equal(property, Expression.Constant(value));
+                            expression = Expression.Equal(property, constant);
                             break;
                         case FilterTypes.NotEquals:
-                            expression = Expression.NotEqual(property, Expression.Constant(value));
+                            expression = Expression.NotEqual(property, constant);
                             break;
                         case FilterTypes.GreaterThan:
-                            expression = Expression.GreaterThan(property, Expression.Constant(value));
+                            expression = Expression.GreaterThan(property, constant);
                             break;
                         case FilterTypes.LowerThan:
-                            expression = Expression.LessThan(property, Expression.Constant(value));
+                            expression = Expression.LessThan(property, constant);
                             break;
                         case FilterTypes.GreaterThanEquals:
-                            expression = Expression.GreaterThanOrEqual(property, Expression.Constant(value));
+                            expression = Expression.GreaterThanOrEqual(property, constant);
                             break;
                         case FilterTypes.LowerThanEquals:
-                            expression = Expression.LessThanOrEqual(property, Expression.Constant(value));
+                            expression = Expression.LessThanOrEqual(property, constant);
                             break;
                         case FilterTypes.Like:
-                            var likeValue = $"%{value}%";
-                            var methodInfo = typeof(string).GetMethod("Contains", new[] { typeof(string) })!;
-                            expression = Expression.Call(property, methodInfo, Expression.Constant(likeValue));
+                            var likeValue = $"%{convertedValue}%";
+                            var mi = typeof(string).GetMethod("Contains", new[] { typeof(string) })!;
+                            expression = Expression.Call(property, mi, Expression.Constant(likeValue));
                             break;
 
                         case FilterTypes.Between:
 
-                            var fromValue = (propertyType == typeof(string)) ? filter.from : Convert.ChangeType(filter.from, propertyType);
-                            var toValue = (propertyType == typeof(string)) ? filter.to : Convert.ChangeType(filter.to, propertyType);
+                            var fromVal = Convert.ChangeType(filter.from, underlyingType);
+                            var toVal = Convert.ChangeType(filter.to, underlyingType);
 
-
-                            var greaterThanOrEqual = Expression.GreaterThanOrEqual(property, Expression.Constant(fromValue));
-                            var lessThanOrEqual = Expression.LessThanOrEqual(property, Expression.Constant(toValue));
+                            // Crear constantes con propertyType
+                            var fromConst = Expression.Constant(fromVal, propertyType);
+                            var toConst = Expression.Constant(toVal, propertyType);
+                            var greaterThanOrEqual = Expression.GreaterThanOrEqual(property, fromConst);
+                            var lessThanOrEqual = Expression.LessThanOrEqual(property, toConst);
 
                             expression = Expression.AndAlso(greaterThanOrEqual, lessThanOrEqual);
                             break;
@@ -131,7 +141,7 @@ namespace bookApi.infrastructure.Repositories
 
                             var methodInfoContains = typeof(string).GetMethod("Contains", new[] { typeof(string) })!;
 
-                            expression = Expression.Call(property, methodInfoContains, Expression.Constant(value?.ToString() ?? ""));
+                            expression = Expression.Call(property, methodInfoContains, Expression.Constant(convertedValue?.ToString() ?? ""));
                             break;
                         default:
                             throw new InvalidOperationException($"Unsopported filter type: {filter.type}");
@@ -184,28 +194,28 @@ namespace bookApi.infrastructure.Repositories
         public async Task<GenericListResponse<BookResponse>> GetUserShelf(int userId, int page, int pageSize)
         {
             var query = _context.Books
-                .Include(b => b.BookGenres)
-                .ThenInclude(bg => bg.Genre)
-                .Include(b => b.UserBooks)
-                .ThenInclude(ub => ub.ReadingStatus)
-                .Where(b => b.UserBooks.Any(ub => ub.UserId == userId))
-                .Select(b => new BookResponse
-                {
-                    Book = b,
-                    UserBook = b.UserBooks.FirstOrDefault(b => b.UserId == userId)
-                })
-                .Where(b => !b.Book.Deleted);
+            .Include(b => b.BookGenres)
+            .ThenInclude(bg => bg.Genre)
+            .Include(b => b.UserBooks)
+            .ThenInclude(ub => ub.ReadingStatus)
+            .Where(b => b.UserBooks.Any(ub => ub.UserId == userId)) // <- antes
+            .Where(b => !b.Deleted)  // <- este también antes
+            .Select(b => new BookResponse
+            {
+                Book = b,
+                UserBook = b.UserBooks.FirstOrDefault(b => b.UserId == userId)
+            });
             // pagination
             int total = await query.CountAsync();
 
             //
-            int currentPage = page < 1 ? PaginationConstants.DefaultPageSize : pageSize;
+            int currentPage = page < 1 ? PaginationConstants.DefaultPageSize : page;
             int currentLength = pageSize < 1 ? PaginationConstants.DefaultPageSize : pageSize;
             //
 
             int skip = (currentPage - 1) * currentLength;
 
-            query = query.Skip(skip).Take(currentPage);
+            query = query.Skip(skip).Take(currentLength);
             var data = await query.ToListAsync();
 
             return new GenericListResponse<BookResponse>
@@ -228,12 +238,10 @@ namespace bookApi.infrastructure.Repositories
 
         public async Task<UserBook> UpdateUserBook(UserBook userbook)
         {
-            //_context.UserBooks.Update(userbook).Property(ub => ub.UpdatedAt).IsModified = true;
-            //await _context.SaveChangesAsync();
 
-            //return await GetOneUserBook(userbook.UserId, userbook.BookId);
             try
             {
+                userbook.UpdatedAt = DateTime.UtcNow;
                 _context.UserBooks.Update(userbook).Property(ub => ub.UpdatedAt).IsModified = true;
                 await _context.SaveChangesAsync();
 

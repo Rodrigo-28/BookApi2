@@ -1,4 +1,5 @@
 ﻿using bookApi.Domian.Interfaces;
+using bookApi.infrastructure.Data;
 using bookApi.infrastructure.Repositories;
 using bookApi.infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,9 @@ namespace bookApi.infrastructure.Extensions
             services.AddTransient<ICommentRepository, CommentRepository>();
             services.AddTransient<IPasswordEncryptionService, PasswordEncryptionService>();
             services.AddTransient<IJwtTokenService, JwtTokenService>();
+
+            //   DataSeeder
+            services.AddTransient<DataSeeder>();
 
             return services;
         }

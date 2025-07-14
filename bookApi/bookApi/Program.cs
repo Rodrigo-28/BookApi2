@@ -2,6 +2,7 @@ using bookApi.Application.Extensions;
 using bookApi.Application.Mappings;
 using bookApi.Extensions;
 using bookApi.infrastructure.Contexts;
+using bookApi.infrastructure.Data;
 using bookApi.infrastructure.Extensions;
 using bookApi.Middleware;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,11 @@ builder.Services.AddCustomAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 
