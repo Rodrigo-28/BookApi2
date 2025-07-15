@@ -150,6 +150,7 @@ namespace bookApi.Application.Services
 
         public async Task<UserBookResponseDto> RateBook(int userId, int bookId, RateBookDto rateBookDto)
         {
+            //permite a un usuario calificar un libro y se asegura de que el estado de lectura pase a Read.
             return await UpserUserBook(userId, bookId, userbook =>
             {
                 userbook.Rating = rateBookDto.Rating;
@@ -186,6 +187,7 @@ namespace bookApi.Application.Services
             await _bookRepository.RemoveFromShelf(bookResponse.UserBook);
             return true;
         }
+        //estanteria de un usuario
         public async Task<GenericListResponse<BookListResponseDto>> GetUserShelf(int userId, int page, int pageSize)
         {
             var books = await _bookRepository.GetUserShelf(userId, page, pageSize);
@@ -193,5 +195,6 @@ namespace bookApi.Application.Services
 
             return _mapper.Map<GenericListResponse<BookListResponseDto>>(books);
         }
+
     }
 }
