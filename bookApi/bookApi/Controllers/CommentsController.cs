@@ -1,6 +1,5 @@
 ﻿using bookApi.Application.Dtos.Request;
 using bookApi.Application.Interfaces;
-using bookApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace bookApi.Controllers
@@ -10,17 +9,19 @@ namespace bookApi.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly ICommentService _commentService;
+        private readonly IUserHelper _userHelper;
 
-        public CommentsController(ICommentService commentService)
+        public CommentsController(ICommentService commentService, IUserHelper userHelper)
         {
             this._commentService = commentService;
+            this._userHelper = userHelper;
         }
 
         [HttpPost("{reviewId}")]
         public async Task<IActionResult> Create(int reviewId, [FromBody] CreateCommentDto commentDto)
         {
 
-            var userId = UserHelper.GetRequiredUserId(User);
+            var userId = _userHelper.GetRequiredUserId(User);
 
             var commentResponse = await _commentService.Create(reviewId, userId, commentDto);
 
@@ -57,7 +58,7 @@ namespace bookApi.Controllers
         [HttpDelete("/api/reviews/{reviewId}/comments/{commentId}")]
         public async Task<IActionResult> Delete(int reviewId, int commentId)
         {
-            var userId = UserHelper.GetRequiredUserId(User);
+            var userId = _userHelper.GetRequiredUserId(User);
             await _commentService.Delete(reviewId, userId, commentId);
 
             // No necesita retornar un mensaje, simplemente un 204

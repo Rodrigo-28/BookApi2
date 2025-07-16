@@ -17,6 +17,7 @@ builder.Services.AddCustomSwagger();
 builder.Services.AddApplicationServices();
 builder.Services.AddCustomValidators();
 builder.Services.AddControllers();
+
 //Infrastructure
 //aplication
 //builder.Services.AddHttpContextAccessor();

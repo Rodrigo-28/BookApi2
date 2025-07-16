@@ -1,6 +1,5 @@
 ﻿using bookApi.Application.Dtos.Request;
 using bookApi.Application.Interfaces;
-using bookApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,16 +10,18 @@ namespace bookApi.Controllers
     public class ReviewsController : ControllerBase
     {
         private readonly IReviewService _reviewService;
+        private readonly IUserHelper _userHelper;
 
-        public ReviewsController(IReviewService reviewService)
+        public ReviewsController(IReviewService reviewService, IUserHelper userHelper)
         {
             this._reviewService = reviewService;
+            this._userHelper = userHelper;
         }
         [Authorize(Policy = "AuthenticatedUser")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateReviewDto reviewDto)
         {
-            var userId = UserHelper.GetRequiredUserId(User);
+            var userId = _userHelper.GetRequiredUserId(User);
             var reviewResponse = await _reviewService.Create(reviewDto, userId);
             if (reviewResponse != null)
             {
@@ -50,7 +51,7 @@ namespace bookApi.Controllers
         [HttpDelete("{reviewId}/delete")]
         public async Task<IActionResult> DeleteRevie(int reviewId)
         {
-            var userId = UserHelper.GetRequiredUserId(User);
+            var userId = _userHelper.GetRequiredUserId(User);
             var res = await _reviewService.Delete(userId, reviewId);
             return Ok(res);
         }

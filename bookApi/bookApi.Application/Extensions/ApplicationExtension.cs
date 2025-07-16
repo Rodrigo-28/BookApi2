@@ -16,6 +16,9 @@ namespace bookApi.Application.Extensions
             services.AddTransient<ILikeService, LikeService>();
             services.AddTransient<IReviewService, ReviewService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IUserHelper, UserHelper>();
+
+
 
 
 
