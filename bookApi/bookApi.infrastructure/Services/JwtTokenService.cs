@@ -26,7 +26,7 @@ namespace bookApi.infrastructure.Services
 
             //Key-Value pair that represent user data that can be encoded into the JWT
             //These claims are included in the payload of the token
-            var claims = new[]
+            var claims = new Claim[]
             {
                 //Identifies the principal (User) that is the subject of the JWT
                     new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), //Sub (subject)
