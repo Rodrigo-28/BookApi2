@@ -2,7 +2,7 @@
 
 namespace bookApi.Domian.Interfaces
 {
-    public interface IBaseRepository<TEntity>
+    public interface IBaseRepository<TEntity> where TEntity : class
     {
         Task<IEnumerable<TEntity>> GetAll(IncludeDelegate<TEntity>? include = null);
 

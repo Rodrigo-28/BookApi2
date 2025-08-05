@@ -14,7 +14,7 @@ namespace bookApi.infrastructure.Repositories
 
         public BaseRepository(ApplicationDbContext context)
         {
-            this._context = context;
+            _context = context;
             _dbSet = _context.Set<TEntity>();
 
         }
