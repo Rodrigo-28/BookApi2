@@ -9,10 +9,7 @@ namespace bookApi.infrastructure.Repositories
     public class GenreRepository : BaseRepository<Genre>, IGenreRepository
     {
 
-        /*
-         * Al usar Expression<Func<Genre, bool>>, 
-         * el filtro se traduce en una consulta SQL y se ejecuta directamente en la base de datos, sin traer todos los datos a memoria.
-         */
+
         public GenreRepository(ApplicationDbContext context) : base(context)
         {
 
