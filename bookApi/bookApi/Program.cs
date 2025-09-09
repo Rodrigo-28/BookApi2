@@ -28,9 +28,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
            .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
 );
-
 //Add Authorization and Authentication
 builder.Services.AddCustomAuth(builder.Configuration);
+
 //automapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
