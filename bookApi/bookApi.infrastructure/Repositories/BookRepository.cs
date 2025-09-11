@@ -193,24 +193,25 @@ namespace bookApi.infrastructure.Repositories
 
         public async Task<GenericListResponse<BookResponse>> GetUserShelf(int userId, int page, int pageSize)
         {
-            var query = _context.Books
-            .Include(b => b.BookGenres)
-            .ThenInclude(bg => bg.Genre)
-            .Include(b => b.UserBooks)
-            .ThenInclude(ub => ub.ReadingStatus)
-            .Where(b => b.UserBooks.Any(ub => ub.UserId == userId)) // <- antes
-            .Where(b => !b.Deleted)  // <- este también antes
-            .Select(b => new BookResponse
-            {
-                Book = b,
-                UserBook = b.UserBooks.FirstOrDefault(b => b.UserId == userId)
-            });
+            var query = _context.UserBooks
+     .Where(ub => ub.UserId == userId)
+     .Include(ub => ub.ReadingStatus)
+     .Include(ub => ub.Book)
+         .ThenInclude(b => b.BookGenres)
+             .ThenInclude(bg => bg.Genre)
+     .Where(ub => !ub.Book.Deleted)
+     .Select(ub => new BookResponse
+     {
+         Book = ub.Book,
+         UserBook = ub
+     });
             // pagination
             int total = await query.CountAsync();
 
             //
-            int currentPage = page < 1 ? PaginationConstants.DefaultPageSize : page;
+            int currentPage = page < 1 ? PaginationConstants.DefaultPage : page;
             int currentLength = pageSize < 1 ? PaginationConstants.DefaultPageSize : pageSize;
+
             //
 
             int skip = (currentPage - 1) * currentLength;
