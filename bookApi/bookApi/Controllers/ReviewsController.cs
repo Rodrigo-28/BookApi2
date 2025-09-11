@@ -26,8 +26,8 @@ namespace bookApi.Controllers
             if (reviewResponse != null)
             {
                 return CreatedAtAction(
-                    actionName: nameof(GetOne), // The action that retrieves the created resource
-                    routeValues: new { reviewId = reviewResponse.Id }, // Route values to populate the URL for the location header
+                    actionName: nameof(GetOne),
+                    routeValues: new { reviewId = reviewResponse.Id },
                     value: reviewResponse
                 );
             }

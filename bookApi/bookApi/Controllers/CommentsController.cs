@@ -25,13 +25,12 @@ namespace bookApi.Controllers
 
             var commentResponse = await _commentService.Create(reviewId, userId, commentDto);
 
-            //Returns 201
-            // Assuming the userResponse contains the ID of the newly created user.
+
             if (commentResponse != null)
             {
                 return CreatedAtAction(
-                    actionName: nameof(GetOne), // The action that retrieves the created resource
-                    routeValues: new { reviewId, commentId = commentResponse.Id }, // Route values to populate the URL for the location header
+                    actionName: nameof(GetOne),
+                    routeValues: new { reviewId, commentId = commentResponse.Id },
                     value: commentResponse
                 );
             }
@@ -43,7 +42,7 @@ namespace bookApi.Controllers
         [HttpGet("/api/reviews/{reviewId}/comments/{commentId}")]
         public async Task<IActionResult> GetOne(int reviewId, int commentId)
         {
-            // El servicio manejará NotFound o cualquier otra excepción
+
             var res = await _commentService.GetOne(reviewId, commentId);
             return Ok(res);
         }
@@ -61,7 +60,7 @@ namespace bookApi.Controllers
             var userId = _userHelper.GetRequiredUserId(User);
             await _commentService.Delete(reviewId, userId, commentId);
 
-            // No necesita retornar un mensaje, simplemente un 204
+
             return NoContent();
         }
     }
