@@ -1,11 +1,12 @@
-﻿using bookApi.Domian.Models;
+﻿using bookApi.Domian.Interfaces;
+using bookApi.Domian.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace bookApi.infrastructure.Contexts
 {
     public class ApplicationDbContext : DbContext
     {
-
+        private readonly IPasswordEncryptionService _passwordEncryptionService;
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -108,10 +109,10 @@ namespace bookApi.infrastructure.Contexts
 
          );
 
-            modelBuilder.Entity<User>().HasData(
-                   new User { Id = 1, Username = "admin", Email = "admin@admin.com", Password = _passwordEncryptionService.HashPassword("123456$Admin"), RoleId = (int)UserRole.Admin },
-                   new User { Id = 2, Username = "user", Email = "user@user.com", Password = _passwordEncryptionService.HashPassword("123456$User"), RoleId = (int)UserRole.User }
-                );
+            //modelBuilder.Entity<User>().HasData(
+            //       new User { Id = 1, Username = "admin", Email = "admin@admin.com", Password = _passwordEncryptionService.HashPassword("123456$Admin"), RoleId = (int)UserRole.Admin },
+            //       new User { Id = 2, Username = "user", Email = "user@user.com", Password = _passwordEncryptionService.HashPassword("123456$User"), RoleId = (int)UserRole.User }
+            //    );
             modelBuilder.Entity<Genre>().HasData(
             new Genre { Id = 1, Name = "fantasy" },
             new Genre { Id = 2, Name = "Science Fiction" },
@@ -182,4 +183,5 @@ namespace bookApi.infrastructure.Contexts
 
         }
     }
+}
 
