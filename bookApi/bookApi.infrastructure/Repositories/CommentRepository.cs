@@ -20,7 +20,7 @@ namespace bookApi.infrastructure.Repositories
         {
             await base.Create(comment);
 
-            // recupero el comentario recien creado
+
             var createdComment = await base.GetOne(comment.Id, query => query.Include(c => c.User));
 
             return createdComment;
