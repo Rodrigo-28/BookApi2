@@ -96,7 +96,7 @@ namespace bookApi.infrastructure.Contexts
            .OnDelete(DeleteBehavior.Cascade);
 
 
-
+            SeedData(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
