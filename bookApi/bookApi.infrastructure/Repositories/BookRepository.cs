@@ -185,8 +185,8 @@ namespace bookApi.infrastructure.Repositories
             return new GenericListResponse<BookResponse>
             {
                 Total = total,
-                Page = page,
-                Length = pageSize,
+                Page = currentPage,
+                Length = currentLength,
                 Data = data
             };
         }
